@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
 import 'package:ironroll/progress_track.dart';
+import 'package:ironroll/model/quest.dart';
 
 class CharacterSheetPage extends StatefulWidget {
   const CharacterSheetPage({super.key});
@@ -343,9 +344,16 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                           children: [
                             sectionTitle("Quests"),
                             ProgressTrack(
-                              name: 'Quest Name',
-                              rank: 'Epic',
-                              ticks: 0,
+                              quest: Quest(
+                                'Secure the Alien Vault',
+                                QuestRank.formidable,
+                              ),
+                              onChanged: (updatedQuest) {
+                                print(
+                                  'Progress: ${updatedQuest.progress} ticks',
+                                );
+                                print('New Rank: ${updatedQuest.rank}');
+                              },
                             ),
                           ],
                         ),

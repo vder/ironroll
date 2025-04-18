@@ -1,62 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:ironroll/model/quest.dart';
 
 class ProgressTrack extends StatefulWidget {
-  final String name;
-  final String rank;
-  final int ticks; // total ticks (0–40)
-  final void Function(int)? onChanged;
+  final Quest quest;
+  final void Function(Quest)? onChanged;
 
-  const ProgressTrack({
-    Key? key,
-    required this.name,
-    required this.rank,
-    required this.ticks,
-    this.onChanged,
-  }) : super(key: key);
+  const ProgressTrack({Key? key, required this.quest, this.onChanged})
+    : super(key: key);
 
   @override
   State<ProgressTrack> createState() => _ProgressTrackState();
 }
 
 class _ProgressTrackState extends State<ProgressTrack> {
-  late int _ticks;
+  late Quest _quest;
 
   @override
   void initState() {
     super.initState();
-    _ticks = widget.ticks.clamp(0, 40);
+    _quest = Quest(widget.quest.name, widget.quest.rank)
+      ..progress = widget.quest.progress.clamp(0, 40);
   }
 
-  /// Correct ticks gained per "progress mark", based on Starforged rules
+  // Ticks gained per progress mark based on Starforged rules
   int get ticksPerMark {
-    switch (widget.rank.toLowerCase()) {
-      case 'troublesome':
+    switch (_quest.rank) {
+      case QuestRank.troublesome:
         return 12;
-      case 'dangerous':
+      case QuestRank.dangerous:
         return 8;
-      case 'formidable':
+      case QuestRank.formidable:
         return 4;
-      case 'extreme':
+      case QuestRank.extreme:
         return 2;
-      case 'epic':
-        return 1;
-      default:
+      case QuestRank.epic:
         return 1;
     }
   }
 
-  void _incrementTick() {
+  void _incrementProgress() {
     setState(() {
-      _ticks = (_ticks + ticksPerMark).clamp(0, 40);
-      widget.onChanged?.call(_ticks);
+      _quest.progress = (_quest.progress + ticksPerMark).clamp(0, 40);
+      widget.onChanged?.call(_quest);
     });
   }
 
-  void _decrementTick() {
+  void _decrementProgress() {
     setState(() {
-      _ticks = (_ticks - ticksPerMark).clamp(0, 40);
-      widget.onChanged?.call(_ticks);
+      _quest.progress = (_quest.progress - ticksPerMark).clamp(0, 40);
+      widget.onChanged?.call(_quest);
     });
+  }
+
+  void _updateRank(QuestRank newRank) {
+    setState(() {
+      _quest.rank = newRank;
+      widget.onChanged?.call(_quest);
+    });
+  }
+
+  String getRankLabel(QuestRank rank) {
+    return rank.name[0].toUpperCase() + rank.name.substring(1);
+  }
+
+  IconData _iconForTicks(int ticks) {
+    switch (ticks) {
+      case 1:
+        return Icons.looks_one;
+      case 2:
+        return Icons.looks_two;
+      case 3:
+        return Icons.looks_3;
+      case 4:
+        return Icons.check_box; // Fully filled
+      default:
+        return Icons.crop_square; // Empty
+    }
   }
 
   @override
@@ -64,47 +83,52 @@ class _ProgressTrackState extends State<ProgressTrack> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title and Rank
+        // Quest name
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
-          child: Column(
-            children: [
-              Text(
-                widget.name,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 12),
-              Chip(
-                label: Text(widget.rank, style: const TextStyle(fontSize: 10)),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                visualDensity: VisualDensity.compact,
-                backgroundColor: Colors.grey.shade200,
-              ),
-            ],
+          child: Text(
+            _quest.name,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
-        // Progress Row
+
+        // Rank selector
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children:
+              QuestRank.values.map((rank) {
+                final bool isSelected = rank == _quest.rank;
+                return ChoiceChip(
+                  label: Text(
+                    getRankLabel(rank),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) => _updateRank(rank),
+                  selectedColor: Colors.blue.shade200,
+                  backgroundColor: Colors.grey.shade200,
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                );
+              }).toList(),
+        ),
+
+        const SizedBox(height: 8),
+
+        // Progress boxes
         GestureDetector(
-          onTap: _incrementTick,
-          onLongPress: _decrementTick,
+          onTap: _incrementProgress,
+          onLongPress: _decrementProgress,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: List.generate(10, (boxIndex) {
-              int boxTicks = (_ticks - boxIndex * 4).clamp(0, 4);
+              int boxTicks = (_quest.progress - boxIndex * 4).clamp(0, 4);
               return Container(
                 margin: const EdgeInsets.all(4),
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Center(
-                  child: Text(
-                    boxTicks > 0 ? '$boxTicks' : '',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
+                width: 32,
+                height: 32,
+                child: Icon(_iconForTicks(boxTicks), size: 24),
               );
             }),
           ),
