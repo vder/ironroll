@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
+import 'package:ironroll/progress_track.dart';
 
 class CharacterSheetPage extends StatefulWidget {
   const CharacterSheetPage({super.key});
@@ -241,125 +242,137 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
           child: Row(
             children: [
               Expanded(
-                child: Container(
-                  child: ListView(
-                    children: [
-                      // Header
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              decoration: _buildInputDecoration('Name'),
-                              initialValue: characterProvider.user.name,
-                              onChanged:
-                                  (value) =>
-                                      characterProvider.updateName(value),
-                              style: GoogleFonts.robotoCondensed(),
+                child: ListView(
+                  children: [
+                    // Header
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: _buildInputDecoration('Name'),
+                            initialValue: characterProvider.user.name,
+                            onChanged:
+                                (value) => characterProvider.updateName(value),
+                            style: GoogleFonts.robotoCondensed(),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: _buildInputDecoration('Pronouns'),
+                            style: GoogleFonts.robotoCondensed(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      decoration: _buildInputDecoration('Characteristics'),
+                      style: GoogleFonts.robotoCondensed(),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Stats
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            sectionTitle("Stats"),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                statBox('EDGE', 0),
+                                statBox('HEART', 0),
+                                statBox('IRON', 0),
+                                statBox('SHADOW', 0),
+                                statBox('WITS', 0),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              decoration: _buildInputDecoration('Pronouns'),
-                              style: GoogleFonts.robotoCondensed(),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Impacts
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            sectionTitle("Impacts"),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children:
+                                  impacts.keys
+                                      .map((impact) => checkboxLabel(impact))
+                                      .toList(),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        decoration: _buildInputDecoration('Characteristics'),
-                        style: GoogleFonts.robotoCondensed(),
-                        maxLines: 3,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Stats
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              sectionTitle("Stats"),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  statBox('EDGE', 0),
-                                  statBox('HEART', 0),
-                                  statBox('IRON', 0),
-                                  statBox('SHADOW', 0),
-                                  statBox('WITS', 0),
-                                ],
-                              ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
+                    ),
 
-                      // Impacts
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              sectionTitle("Impacts"),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children:
-                                    impacts.keys
-                                        .map((impact) => checkboxLabel(impact))
-                                        .toList(),
+                    // Assets
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            sectionTitle("Assets"),
+                            TextFormField(
+                              decoration: _buildInputDecoration(
+                                'List assets, items, starships, etc.',
                               ),
-                            ],
-                          ),
+                              style: GoogleFonts.robotoCondensed(),
+                              maxLines: 4,
+                            ),
+                          ],
                         ),
                       ),
-
-                      // Assets
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              sectionTitle("Assets"),
-                              TextFormField(
-                                decoration: _buildInputDecoration(
-                                  'List assets, items, starships, etc.',
-                                ),
-                                style: GoogleFonts.robotoCondensed(),
-                                maxLines: 4,
-                              ),
-                            ],
-                          ),
+                    ),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            sectionTitle("Quests"),
+                            ProgressTrack(
+                              name: 'Quest Name',
+                              rank: 'Epic',
+                              ticks: 0,
+                            ),
+                          ],
                         ),
                       ),
+                    ),
 
-                      const SizedBox(height: 16),
-                      // Footer Controls
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              verticalTrack('Momentum', -6, 2, 10),
-                              Column(
-                                children: [
-                                  verticalTrack('Health', 0, 4, 5),
-                                  verticalTrack('Spirit', 0, 3, 5),
-                                  verticalTrack('Supply', 0, 3, 5),
-                                ],
-                              ),
-                            ],
-                          ),
+                    const SizedBox(height: 16),
+                    // Footer Controls
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            verticalTrack('Momentum', -6, 2, 10),
+                            Column(
+                              children: [
+                                verticalTrack('Health', 0, 4, 5),
+                                verticalTrack('Spirit', 0, 3, 5),
+                                verticalTrack('Supply', 0, 3, 5),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
