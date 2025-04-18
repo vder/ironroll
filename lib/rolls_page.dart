@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ironroll/main.dart';
 import 'package:ironroll/big_card.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
+import 'package:ironroll/model/user.dart';
 import 'dart:math';
 
 class RollsPage extends StatefulWidget {
@@ -11,12 +11,12 @@ class RollsPage extends StatefulWidget {
 }
 
 class _RollsPageState extends State<RollsPage> {
-  final Map<String, bool> _selectedStats = {
-    'EDGE': false,
-    'HEART': false,
-    'IRON': false,
-    'SHADOW': false,
-    'WITS': false,
+  final Map<StatName, bool> _selectedStats = {
+    StatName.edge: false,
+    StatName.heart: false,
+    StatName.iron: false,
+    StatName.shadow: false,
+    StatName.wits: false,
   };
 
   bool isActionRoll = false;
@@ -25,11 +25,11 @@ class _RollsPageState extends State<RollsPage> {
   List<int> d10s = [];
   int d100 = 0;
 
-  void actionRoll(CharacterStatsProvider statsProvider) {
+  void actionRoll(CharacterProvider statsProvider) {
     int increase = 0;
-    _selectedStats.forEach((key, value) {
-      if (value) {
-        increase = increase + statsProvider.getStat(key);
+    _selectedStats.forEach((stat, isSelected) {
+      if (isSelected) {
+        increase = increase + statsProvider.getStatFromEnum(stat);
       }
     });
     setState(() {
@@ -48,15 +48,14 @@ class _RollsPageState extends State<RollsPage> {
     });
   }
 
-  void _toggleStat(String stat) {
+  void _toggleStat(StatName stat) {
     setState(() {
       // First, set all stats to false
       for (var key in _selectedStats.keys) {
         if (key != stat) {
           _selectedStats[key] = false;
-        } else
-        // Then, set the selected stat to true
-        {
+        } else {
+          // Then, set the selected stat to true
           _selectedStats[stat] = !_selectedStats[stat]!;
         }
       }
@@ -65,7 +64,7 @@ class _RollsPageState extends State<RollsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final statsProvider = Provider.of<CharacterStatsProvider>(context);
+    final statsProvider = Provider.of<CharacterProvider>(context);
 
     return Center(
       child: Column(
@@ -120,7 +119,7 @@ class _RollsPageState extends State<RollsPage> {
                         padding: EdgeInsets.only(right: 4),
                         child: ChoiceChip(
                           label: Text(
-                            entry.key,
+                            entry.key.toString().split('.').last.toUpperCase(),
                             style: TextStyle(fontSize: 12),
                           ),
                           selected: entry.value,

@@ -1,37 +1,100 @@
 import 'package:flutter/foundation.dart';
+import '../model/user.dart';
 
-class CharacterStatsProvider with ChangeNotifier {
-  final Map<String, int> _stats = {
-    'EDGE': 2,
-    'HEART': 2,
-    'IRON': 1,
-    'SHADOW': 1,
-    'WITS': 3,
-  };
+class CharacterProvider with ChangeNotifier {
+  User user = User(
+    "John Doe",
+    2, // edge
+    2, // heart
+    1, // iron
+    1, // shadow
+    3, // wits
+  );
 
-  Map<String, int> get stats => _stats;
+  User get stats => user;
 
-  int getStat(String stat) => _stats[stat] ?? 0;
+  int getStat(String label) {
+    final statName = StatName.values.firstWhere(
+      (e) => e.toString().split('.').last.toUpperCase() == label,
+    );
+    return getStatFromEnum(statName);
+  }
 
-  void updateStat(String stat, int value) {
+  void updateName(String name) {
+    user.name = name;
+    notifyListeners();
+  }
+
+  int getStatFromEnum(StatName stat) {
+    switch (stat) {
+      case StatName.edge:
+        return user.edge.value;
+      case StatName.heart:
+        return user.heart.value;
+      case StatName.iron:
+        return user.iron.value;
+      case StatName.shadow:
+        return user.shadow.value;
+      case StatName.wits:
+        return user.wits.value;
+    }
+  }
+
+  void updateStat(String label, int value) {
+    final statName = StatName.values.firstWhere(
+      (e) => e.toString().split('.').last.toUpperCase() == label,
+    );
+    updateStatFromEnum(statName, value);
+  }
+
+  void updateStatFromEnum(StatName stat, int value) {
     if (value >= 0 && value <= 5) {
-      // Enforce limits
-      _stats[stat] = value;
+      switch (stat) {
+        case StatName.edge:
+          user.edge = Stat(name: StatName.edge, value: value);
+          break;
+        case StatName.heart:
+          user.heart = Stat(name: StatName.heart, value: value);
+          break;
+        case StatName.iron:
+          user.iron = Stat(name: StatName.iron, value: value);
+          break;
+        case StatName.shadow:
+          user.shadow = Stat(name: StatName.shadow, value: value);
+          break;
+        case StatName.wits:
+          user.wits = Stat(name: StatName.wits, value: value);
+          break;
+      }
       notifyListeners();
     }
   }
 
-  void incrementStat(String stat) {
-    if (_stats[stat]! < 5) {
-      _stats[stat] = _stats[stat]! + 1;
-      notifyListeners();
+  void incrementStat(String label) {
+    final statName = StatName.values.firstWhere(
+      (e) => e.toString().split('.').last.toUpperCase() == label,
+    );
+    incrementStatFromEnum(statName);
+  }
+
+  void incrementStatFromEnum(StatName stat) {
+    final currentValue = getStatFromEnum(stat);
+    if (currentValue < 5) {
+      updateStatFromEnum(stat, currentValue + 1);
     }
   }
 
-  void decrementStat(String stat) {
-    if (_stats[stat]! > 0) {
-      _stats[stat] = _stats[stat]! - 1;
-      notifyListeners();
+  void decrementStat(String label) {
+    final statName = StatName.values.firstWhere(
+      (e) => e.toString().split('.').last.toUpperCase() == label,
+    );
+    decrementStatFromEnum(statName);
+  }
+
+  void decrementStatFromEnum(StatName stat) {
+    final currentValue = getStatFromEnum(stat);
+    if (currentValue > 0) {
+      updateStatFromEnum(stat, currentValue - 1);
     }
   }
 }

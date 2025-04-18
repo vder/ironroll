@@ -26,7 +26,7 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
 
   Widget statBox(String label, int value) {
     // Get the provider
-    final statsProvider = Provider.of<CharacterStatsProvider>(context);
+    final characterProvider = Provider.of<CharacterProvider>(context);
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -67,7 +67,7 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${statsProvider.getStat(label)}',
+                      '${characterProvider.getStat(label)}',
                       style: GoogleFonts.robotoCondensed(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -80,23 +80,23 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   InkWell(
-                    onTap: () => statsProvider.incrementStat(label),
+                    onTap: () => characterProvider.incrementStat(label),
                     child: Icon(
                       Icons.arrow_drop_up,
                       size: 36,
                       color:
-                          statsProvider.getStat(label) < 5
+                          characterProvider.getStat(label) < 5
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey[300],
                     ),
                   ),
                   InkWell(
-                    onTap: () => statsProvider.decrementStat(label),
+                    onTap: () => characterProvider.decrementStat(label),
                     child: Icon(
                       Icons.arrow_drop_down,
                       size: 36,
                       color:
-                          statsProvider.getStat(label) > 0
+                          characterProvider.getStat(label) > 0
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey[300],
                     ),
@@ -225,6 +225,8 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
 
   @override
   Widget build(BuildContext context) {
+    final characterProvider = Provider.of<CharacterProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -248,6 +250,10 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                           Expanded(
                             child: TextFormField(
                               decoration: _buildInputDecoration('Name'),
+                              initialValue: characterProvider.user.name,
+                              onChanged:
+                                  (value) =>
+                                      characterProvider.updateName(value),
                               style: GoogleFonts.robotoCondensed(),
                             ),
                           ),

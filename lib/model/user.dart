@@ -1,10 +1,32 @@
-class User {
-  String name = "";
-  late int edge;
-  late int heart;
-  late int iron;
-  late int shadow;
-  late int wits;
+enum StatName { edge, heart, iron, shadow, wits }
 
-  User(this.name, this.edge, this.heart, this.iron, this.shadow, this.wits);
+class Stat {
+  final StatName name;
+  final int value;
+
+  Stat({required this.name, required this.value});
+}
+
+class User {
+  String name;
+  late Stat edge;
+  late Stat heart;
+  late Stat iron;
+  late Stat shadow;
+  late Stat wits;
+
+  User(
+    this.name,
+    int edgeValue,
+    int heartValue,
+    int ironValue,
+    int shadowValue,
+    int witsValue,
+  ) {
+    edge = Stat(name: StatName.edge, value: edgeValue);
+    heart = Stat(name: StatName.heart, value: heartValue);
+    iron = Stat(name: StatName.iron, value: ironValue);
+    shadow = Stat(name: StatName.shadow, value: shadowValue);
+    wits = Stat(name: StatName.wits, value: witsValue);
+  }
 }

@@ -7,9 +7,7 @@ import 'package:ironroll/providers/character_stats_provider.dart';
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CharacterStatsProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => CharacterProvider())],
       child: const MyApp(),
     ),
   );
