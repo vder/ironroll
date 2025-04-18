@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ironroll/main.dart';
 import 'package:ironroll/big_card.dart';
+import 'package:provider/provider.dart';
+import 'package:ironroll/providers/character_stats_provider.dart';
 import 'dart:math';
 
 class RollsPage extends StatefulWidget {
@@ -10,11 +12,11 @@ class RollsPage extends StatefulWidget {
 
 class _RollsPageState extends State<RollsPage> {
   final Map<String, bool> _selectedStats = {
-    'Edge': false,
-    'Heart': false,
-    'Iron': false,
-    'Shadow': false,
-    'Wits': false,
+    'EDGE': false,
+    'HEART': false,
+    'IRON': false,
+    'SHADOW': false,
+    'WITS': false,
   };
 
   bool isActionRoll = false;
@@ -23,9 +25,15 @@ class _RollsPageState extends State<RollsPage> {
   List<int> d10s = [];
   int d100 = 0;
 
-  void actionRoll() {
+  void actionRoll(CharacterStatsProvider statsProvider) {
+    int increase = 0;
+    _selectedStats.forEach((key, value) {
+      if (value) {
+        increase = increase + statsProvider.getStat(key);
+      }
+    });
     setState(() {
-      d6 = Random().nextInt(6) + 1;
+      d6 = Random().nextInt(6) + 1 + increase;
       d10s = List.generate(2, (index) => Random().nextInt(10) + 1);
       isActionRoll = true;
       isOracleRoll = false;
@@ -57,6 +65,8 @@ class _RollsPageState extends State<RollsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final statsProvider = Provider.of<CharacterStatsProvider>(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +80,7 @@ class _RollsPageState extends State<RollsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => actionRoll(),
+                    onPressed: () => actionRoll(statsProvider),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,

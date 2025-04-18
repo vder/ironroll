@@ -24,15 +24,6 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
     "Cursed": false,
   };
 
-  // Add state management for stats
-  final Map<String, int> stats = {
-    'EDGE': 2,
-    'HEART': 2,
-    'IRON': 1,
-    'SHADOW': 1,
-    'WITS': 3,
-  };
-
   Widget statBox(String label, int value) {
     // Get the provider
     final statsProvider = Provider.of<CharacterStatsProvider>(context);

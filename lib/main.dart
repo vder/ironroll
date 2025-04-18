@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironroll/rolls_page.dart';
-import 'package:ironroll/CharacterSheetPage.dart';
+import 'package:ironroll/character_sheet_page.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
 
