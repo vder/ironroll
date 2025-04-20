@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ironroll/widgets/vertical_track.dart';
+import 'package:ironroll/widgets/stat_box.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
 import 'package:ironroll/widgets/progress_track/progress_track_list.dart';
@@ -24,145 +26,6 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
     "Battered": false,
     "Cursed": false,
   };
-
-  Widget statBox(String label, int value) {
-    // Get the provider
-    final characterProvider = Provider.of<CharacterProvider>(context);
-
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.cinzel(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Row(
-            children: [
-              Container(
-                width: 65,
-                height: 65,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${characterProvider.getStat(label)}',
-                      style: GoogleFonts.robotoCondensed(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: () => characterProvider.incrementStat(label),
-                    child: Icon(
-                      Icons.arrow_drop_up,
-                      size: 36,
-                      color:
-                          characterProvider.getStat(label) < 5
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => characterProvider.decrementStat(label),
-                    child: Icon(
-                      Icons.arrow_drop_down,
-                      size: 36,
-                      color:
-                          characterProvider.getStat(label) > 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget verticalTrack(String label, int min, int current, int max) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.cinzel(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          ...List.generate(
-            max - min + 1,
-            (index) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    size: 14,
-                    color:
-                        (max - index) == current
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[300],
-                  ),
-                  Text(
-                    '${max - index}',
-                    style: GoogleFonts.cinzel(fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget checkboxLabel(String text) {
     return Container(
@@ -283,11 +146,31 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                statBox('EDGE', 0),
-                                statBox('HEART', 0),
-                                statBox('IRON', 0),
-                                statBox('SHADOW', 0),
-                                statBox('WITS', 0),
+                                StatBox(
+                                  context: context,
+                                  label: 'EDGE',
+                                  value: 0,
+                                ),
+                                StatBox(
+                                  context: context,
+                                  label: 'HEART',
+                                  value: 0,
+                                ),
+                                StatBox(
+                                  context: context,
+                                  label: 'IRON',
+                                  value: 0,
+                                ),
+                                StatBox(
+                                  context: context,
+                                  label: 'SHADOW',
+                                  value: 0,
+                                ),
+                                StatBox(
+                                  context: context,
+                                  label: 'WITS',
+                                  value: 0,
+                                ),
                               ],
                             ),
                           ],
@@ -359,12 +242,36 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            verticalTrack('Momentum', -6, 2, 10),
+                            VerticalTrack(
+                              context: context,
+                              label: 'Momentum',
+                              min: -6,
+                              current: 2,
+                              max: 10,
+                            ),
                             Column(
                               children: [
-                                verticalTrack('Health', 0, 4, 5),
-                                verticalTrack('Spirit', 0, 3, 5),
-                                verticalTrack('Supply', 0, 3, 5),
+                                VerticalTrack(
+                                  context: context,
+                                  label: 'Health',
+                                  min: 0,
+                                  current: 4,
+                                  max: 5,
+                                ),
+                                VerticalTrack(
+                                  context: context,
+                                  label: 'Spirit',
+                                  min: 0,
+                                  current: 3,
+                                  max: 5,
+                                ),
+                                VerticalTrack(
+                                  context: context,
+                                  label: 'Supply',
+                                  min: 0,
+                                  current: 3,
+                                  max: 5,
+                                ),
                               ],
                             ),
                           ],
