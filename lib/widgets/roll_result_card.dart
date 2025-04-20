@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class BigCard extends StatelessWidget {
-  const BigCard.d100({super.key, required this.d100})
+class RollResultCard extends StatelessWidget {
+  const RollResultCard.d100({super.key, required this.d100})
     : d6 = null,
       d10s = null,
       isD100 = true;
 
-  const BigCard({super.key, required this.d6, required this.d10s})
+  const RollResultCard({super.key, required this.d6, required this.d10s})
     : d100 = null,
       isD100 = false;
 

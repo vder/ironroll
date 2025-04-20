@@ -243,7 +243,6 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             VerticalTrack(
-                              context: context,
                               label: 'Momentum',
                               min: -6,
                               current: 2,
@@ -252,21 +251,18 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                             Column(
                               children: [
                                 VerticalTrack(
-                                  context: context,
                                   label: 'Health',
                                   min: 0,
                                   current: 4,
                                   max: 5,
                                 ),
                                 VerticalTrack(
-                                  context: context,
                                   label: 'Spirit',
                                   min: 0,
                                   current: 3,
                                   max: 5,
                                 ),
                                 VerticalTrack(
-                                  context: context,
                                   label: 'Supply',
                                   min: 0,
                                   current: 3,

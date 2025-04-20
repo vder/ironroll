@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ironroll/big_card.dart';
+import 'package:ironroll/widgets/roll_result_card.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
 import 'package:ironroll/model/user.dart';
@@ -70,8 +70,14 @@ class _RollsPageState extends State<RollsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Visibility(visible: isActionRoll, child: BigCard(d6: d6, d10s: d10s)),
-          Visibility(visible: isOracleRoll, child: BigCard.d100(d100: d100)),
+          Visibility(
+            visible: isActionRoll,
+            child: RollResultCard(d6: d6, d10s: d10s),
+          ),
+          Visibility(
+            visible: isOracleRoll,
+            child: RollResultCard.d100(d100: d100),
+          ),
           SizedBox(height: 10),
           Column(
             children: [
