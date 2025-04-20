@@ -22,7 +22,6 @@ class _ProgressTrackState extends State<ProgressTrack> {
       ..progress = widget.quest.progress.clamp(0, 40);
   }
 
-  // Ticks gained per progress mark based on Starforged rules
   int get ticksPerMark {
     switch (_quest.rank) {
       case QuestRank.troublesome:
@@ -72,9 +71,9 @@ class _ProgressTrackState extends State<ProgressTrack> {
       case 3:
         return Icons.looks_3;
       case 4:
-        return Icons.check_box; // Fully filled
+        return Icons.check_box;
       default:
-        return Icons.crop_square; // Empty
+        return Icons.crop_square;
     }
   }
 
@@ -84,34 +83,35 @@ class _ProgressTrackState extends State<ProgressTrack> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Quest name
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            _quest.name,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-
-        // Rank selector
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children:
-              QuestRank.values.map((rank) {
-                final bool isSelected = rank == _quest.rank;
-                return ChoiceChip(
-                  label: Text(
-                    getRankLabel(rank),
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  selected: isSelected,
-                  onSelected: (_) => _updateRank(rank),
-                  selectedColor: Colors.blue.shade200,
-                  backgroundColor: Colors.grey.shade200,
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                );
-              }).toList(),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                _quest.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Rank dropdown
+            DropdownButton<QuestRank>(
+              value: _quest.rank,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+              onChanged: (rank) {
+                if (rank != null) _updateRank(rank);
+              },
+              items:
+                  QuestRank.values.map((rank) {
+                    return DropdownMenuItem(
+                      value: rank,
+                      child: Text(getRankLabel(rank)),
+                    );
+                  }).toList(),
+            ),
+          ],
         ),
 
         const SizedBox(height: 8),

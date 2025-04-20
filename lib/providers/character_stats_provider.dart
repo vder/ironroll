@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../model/user.dart';
 
 class CharacterProvider with ChangeNotifier {
-  User user = User(
+  Character user = Character(
     "John Doe",
     2, // edge
     2, // heart
@@ -11,7 +11,7 @@ class CharacterProvider with ChangeNotifier {
     3, // wits
   );
 
-  User get stats => user;
+  Character get stats => user;
 
   int getStat(String label) {
     final statName = StatName.values.firstWhere(

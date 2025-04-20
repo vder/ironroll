@@ -7,7 +7,7 @@ class Stat {
   Stat({required this.name, required this.value});
 }
 
-class User {
+class Character {
   String name;
   late Stat edge;
   late Stat heart;
@@ -15,7 +15,7 @@ class User {
   late Stat shadow;
   late Stat wits;
 
-  User(
+  Character(
     this.name,
     int edgeValue,
     int heartValue,

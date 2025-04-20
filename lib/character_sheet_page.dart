@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
-import 'package:ironroll/progress_track.dart';
-import 'package:ironroll/model/quest.dart';
+import 'package:ironroll/widgets/progress_track/progress_track_list.dart';
 
 class CharacterSheetPage extends StatefulWidget {
   const CharacterSheetPage({super.key});
@@ -343,17 +342,9 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             sectionTitle("Quests"),
-                            ProgressTrack(
-                              quest: Quest(
-                                'Secure the Alien Vault',
-                                QuestRank.formidable,
-                              ),
-                              onChanged: (updatedQuest) {
-                                print(
-                                  'Progress: ${updatedQuest.progress} ticks',
-                                );
-                                print('New Rank: ${updatedQuest.rank}');
-                              },
+                            SizedBox(
+                              height: 400, // dopasuj jak chcesz
+                              child: ProgressTrackList(),
                             ),
                           ],
                         ),
