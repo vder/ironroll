@@ -3,8 +3,20 @@ import 'package:ironroll/rolls_page.dart';
 import 'package:ironroll/character_sheet_page.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/track_data.dart';
+import 'models/user.dart';
+import 'models/quest.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(TrackDataAdapter());
+  Hive.registerAdapter(StatNameAdapter());
+  Hive.registerAdapter(StatAdapter());
+  Hive.registerAdapter(CharacterAdapter());
+  Hive.registerAdapter(QuestRankAdapter());
+  Hive.registerAdapter(QuestAdapter());
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => CharacterProvider())],
@@ -45,10 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         page = RollsPage();
-        break;
       case 1:
         page = CharacterSheetPage();
-        break;
     }
     return Scaffold(
       body: Container(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ironroll/widgets/roll_result_card.dart';
 import 'package:provider/provider.dart';
 import 'package:ironroll/providers/character_stats_provider.dart';
-import 'package:ironroll/model/user.dart';
+import 'package:ironroll/models/user.dart';
 import 'dart:math';
 
 class RollsPage extends StatefulWidget {

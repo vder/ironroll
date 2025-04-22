@@ -1,48 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:ironroll/model/quest.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ironroll/models/quest.dart';
 import 'package:ironroll/widgets/progress_track/progress_track.dart';
 
 class ProgressTrackList extends StatefulWidget {
-  const ProgressTrackList({Key? key}) : super(key: key);
+  ProgressTrackList({super.key});
 
   @override
   State<ProgressTrackList> createState() => _ProgressTrackListState();
 }
 
 class _ProgressTrackListState extends State<ProgressTrackList> {
-  final List<Quest> _quests = [];
+  late Box<Quest> _questBox;
   final TextEditingController _nameController = TextEditingController();
   QuestRank _selectedRank = QuestRank.troublesome;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeHive();
+  }
+
+  Future<void> _initializeHive() async {
+    _questBox = await Hive.openBox<Quest>('quests');
+    setState(() {});
+  }
 
   void _addQuest() {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
+    final quest = Quest(name: name, rank: _selectedRank);
+    _questBox.add(quest);
     setState(() {
-      _quests.add(Quest(name, _selectedRank));
       _nameController.clear();
       _selectedRank = QuestRank.troublesome;
     });
   }
 
   void _removeQuest(int index) {
-    setState(() {
-      _quests.removeAt(index);
-    });
+    _questBox.deleteAt(index);
+    setState(() {});
   }
 
   void _updateQuest(int index, Quest updated) {
-    setState(() {
-      _quests[index] = updated;
-    });
+    _questBox.putAt(index, updated);
+    setState(() {});
   }
 
   void _reorderQuests(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) newIndex--;
-      final quest = _quests.removeAt(oldIndex);
-      _quests.insert(newIndex, quest);
-    });
+    if (newIndex > oldIndex) newIndex--;
+    final quest = _questBox.getAt(oldIndex);
+    _questBox.deleteAt(oldIndex);
+    _questBox.putAt(newIndex, quest!);
+    setState(() {});
   }
 
   String _getRankLabel(QuestRank rank) {
@@ -93,44 +104,55 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
           ),
         ),
 
-        // ✅ Scrollable and reorderable quest list
+        // Scrollable and reorderable quest list
         Expanded(
-          child: ReorderableListView.builder(
-            padding: const EdgeInsets.only(bottom: 16),
-            itemCount: _quests.length,
-            onReorder: _reorderQuests,
-            itemBuilder: (context, index) {
-              final quest = _quests[index];
+          child: ValueListenableBuilder<Box<Quest>>(
+            valueListenable: _questBox.listenable(),
+            builder: (context, box, _) {
+              return ReorderableListView.builder(
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: box.length,
+                onReorder: _reorderQuests,
+                itemBuilder: (context, index) {
+                  final quest = box.getAt(index)!;
 
-              return Card(
-                key: ValueKey(quest),
-                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ProgressTrack(
-                              quest: quest,
-                              onChanged:
-                                  (updatedQuest) =>
-                                      _updateQuest(index, updatedQuest),
+                  return Card(
+                    key: ValueKey(quest),
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 8,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ProgressTrack(
+                                  quest: quest,
+                                  onChanged:
+                                      (updatedQuest) =>
+                                          _updateQuest(index, updatedQuest),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => _removeQuest(index),
+                                ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _removeQuest(index),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
           ),

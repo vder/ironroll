@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ironroll/model/quest.dart';
+import 'package:ironroll/models/quest.dart';
 
 class ProgressTrack extends StatefulWidget {
   final Quest quest;
@@ -18,7 +18,7 @@ class _ProgressTrackState extends State<ProgressTrack> {
   @override
   void initState() {
     super.initState();
-    _quest = Quest(widget.quest.name, widget.quest.rank)
+    _quest = Quest(name: widget.quest.name, rank: widget.quest.rank)
       ..progress = widget.quest.progress.clamp(0, 40);
   }
 

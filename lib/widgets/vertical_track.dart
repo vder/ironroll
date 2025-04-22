@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/track_data.dart';
 
 class VerticalTrack extends StatefulWidget {
   const VerticalTrack({
@@ -22,12 +24,34 @@ class VerticalTrack extends StatefulWidget {
 }
 
 class _VerticalTrackState extends State<VerticalTrack> {
+  late Box<TrackData> _trackBox;
   late int _current;
 
   @override
   void initState() {
     super.initState();
     _current = widget.current;
+    _initializeHive();
+  }
+
+  Future<void> _initializeHive() async {
+    _trackBox = await Hive.openBox<TrackData>('tracks');
+    final savedTrack = _trackBox.get(widget.label);
+    if (savedTrack != null) {
+      setState(() {
+        _current = savedTrack.current;
+      });
+    }
+  }
+
+  Future<void> _saveTrackData(int newValue) async {
+    final trackData = TrackData(
+      label: widget.label,
+      min: widget.min,
+      current: newValue,
+      max: widget.max,
+    );
+    await _trackBox.put(widget.label, trackData);
   }
 
   @override
@@ -37,10 +61,11 @@ class _VerticalTrackState extends State<VerticalTrack> {
       final isActive = value == _current;
 
       return GestureDetector(
-        onTap: () {
+        onTap: () async {
           setState(() {
             _current = value;
           });
+          await _saveTrackData(value);
           widget.onValueChanged?.call(value);
         },
         child: Container(

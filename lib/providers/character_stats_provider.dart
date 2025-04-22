@@ -1,15 +1,32 @@
 import 'package:flutter/foundation.dart';
-import '../model/user.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/user.dart';
 
 class CharacterProvider with ChangeNotifier {
-  Character user = Character(
-    "John Doe",
-    2, // edge
-    2, // heart
-    1, // iron
-    1, // shadow
-    3, // wits
-  );
+  late Box<Character> _characterBox;
+  late Character user;
+
+  CharacterProvider() {
+    _initializeHive();
+  }
+
+  Future<void> _initializeHive() async {
+    _characterBox = await Hive.openBox<Character>('character');
+    if (_characterBox.isEmpty) {
+      user = Character.create(
+        "John Doe",
+        2, // edge
+        2, // heart
+        1, // iron
+        1, // shadow
+        3, // wits
+      );
+      await _characterBox.put('current', user);
+    } else {
+      user = _characterBox.get('current')!;
+    }
+    notifyListeners();
+  }
 
   Character get stats => user;
 
@@ -20,8 +37,9 @@ class CharacterProvider with ChangeNotifier {
     return getStatFromEnum(statName);
   }
 
-  void updateName(String name) {
+  Future<void> updateName(String name) async {
     user.name = name;
+    await _characterBox.put('current', user);
     notifyListeners();
   }
 
@@ -40,14 +58,14 @@ class CharacterProvider with ChangeNotifier {
     }
   }
 
-  void updateStat(String label, int value) {
+  Future<void> updateStat(String label, int value) async {
     final statName = StatName.values.firstWhere(
       (e) => e.toString().split('.').last.toUpperCase() == label,
     );
-    updateStatFromEnum(statName, value);
+    await updateStatFromEnum(statName, value);
   }
 
-  void updateStatFromEnum(StatName stat, int value) {
+  Future<void> updateStatFromEnum(StatName stat, int value) async {
     if (value >= 0 && value <= 5) {
       switch (stat) {
         case StatName.edge:
@@ -55,41 +73,42 @@ class CharacterProvider with ChangeNotifier {
         case StatName.heart:
           user.heart = Stat(name: StatName.heart, value: value);
         case StatName.iron:
-          break;
+          user.iron = Stat(name: StatName.iron, value: value);
         case StatName.shadow:
           user.shadow = Stat(name: StatName.shadow, value: value);
         case StatName.wits:
           user.wits = Stat(name: StatName.wits, value: value);
       }
+      await _characterBox.put('current', user);
       notifyListeners();
     }
   }
 
-  void incrementStat(String label) {
+  Future<void> incrementStat(String label) async {
     final statName = StatName.values.firstWhere(
       (e) => e.toString().split('.').last.toUpperCase() == label,
     );
-    incrementStatFromEnum(statName);
+    await incrementStatFromEnum(statName);
   }
 
-  void incrementStatFromEnum(StatName stat) {
+  Future<void> incrementStatFromEnum(StatName stat) async {
     final currentValue = getStatFromEnum(stat);
     if (currentValue < 5) {
-      updateStatFromEnum(stat, currentValue + 1);
+      await updateStatFromEnum(stat, currentValue + 1);
     }
   }
 
-  void decrementStat(String label) {
+  Future<void> decrementStat(String label) async {
     final statName = StatName.values.firstWhere(
       (e) => e.toString().split('.').last.toUpperCase() == label,
     );
-    decrementStatFromEnum(statName);
+    await decrementStatFromEnum(statName);
   }
 
-  void decrementStatFromEnum(StatName stat) {
+  Future<void> decrementStatFromEnum(StatName stat) async {
     final currentValue = getStatFromEnum(stat);
     if (currentValue > 0) {
-      updateStatFromEnum(stat, currentValue - 1);
+      await updateStatFromEnum(stat, currentValue - 1);
     }
   }
 }
