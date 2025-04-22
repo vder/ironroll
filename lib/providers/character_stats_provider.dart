@@ -52,19 +52,14 @@ class CharacterProvider with ChangeNotifier {
       switch (stat) {
         case StatName.edge:
           user.edge = Stat(name: StatName.edge, value: value);
-          break;
         case StatName.heart:
           user.heart = Stat(name: StatName.heart, value: value);
-          break;
         case StatName.iron:
-          user.iron = Stat(name: StatName.iron, value: value);
           break;
         case StatName.shadow:
           user.shadow = Stat(name: StatName.shadow, value: value);
-          break;
         case StatName.wits:
           user.wits = Stat(name: StatName.wits, value: value);
-          break;
       }
       notifyListeners();
     }
