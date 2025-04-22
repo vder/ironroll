@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:ironroll/widgets/roll_result_card.dart';
-import 'package:provider/provider.dart';
-import 'package:ironroll/providers/character_stats_provider.dart';
+import 'package:ironroll/services/character_service.dart';
 import 'package:ironroll/models/user.dart';
+import 'package:ironroll/widgets/roll_result_card.dart';
 import 'dart:math';
 
 class RollsPage extends StatefulWidget {
+  final CharacterService characterService;
+
+  const RollsPage({super.key, required this.characterService});
+
   @override
   State<RollsPage> createState() => _RollsPageState();
 }
 
 class _RollsPageState extends State<RollsPage> {
+  bool isActionRoll = true;
+  bool isOracleRoll = false;
   final Map<StatName, bool> _selectedStats = {
     StatName.edge: false,
     StatName.heart: false,
@@ -18,22 +23,20 @@ class _RollsPageState extends State<RollsPage> {
     StatName.shadow: false,
     StatName.wits: false,
   };
-
-  bool isActionRoll = false;
-  bool isOracleRoll = false;
-  int d6 = 0;
+  int actionDie = 0;
   List<int> d10s = [];
   int d100 = 0;
 
-  void actionRoll(CharacterProvider statsProvider) {
+  void actionRoll() {
     int increase = 0;
     _selectedStats.forEach((stat, isSelected) {
       if (isSelected) {
-        increase = increase + statsProvider.getStatFromEnum(stat);
+        increase += widget.characterService.getStatFromEnum(stat);
       }
     });
+
     setState(() {
-      d6 = Random().nextInt(6) + 1 + increase;
+      actionDie = Random().nextInt(6) + 1 + increase;
       d10s = List.generate(2, (index) => Random().nextInt(10) + 1);
       isActionRoll = true;
       isOracleRoll = false;
@@ -56,7 +59,7 @@ class _RollsPageState extends State<RollsPage> {
           _selectedStats[key] = false;
         } else {
           // Then, set the selected stat to true
-          _selectedStats[stat] = !_selectedStats[stat]!;
+          _selectedStats[key] = !_selectedStats[key]!;
         }
       }
     });
@@ -64,83 +67,71 @@ class _RollsPageState extends State<RollsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final statsProvider = Provider.of<CharacterProvider>(context);
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Visibility(
-            visible: isActionRoll,
-            child: RollResultCard(d6: d6, d10s: d10s),
+        children: <Widget>[
+          Text(
+            'Character: ${widget.characterService.stats.name}',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          Visibility(
-            visible: isOracleRoll,
-            child: RollResultCard.d100(d100: d100),
-          ),
-          SizedBox(height: 10),
-          Column(
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => actionRoll(statsProvider),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Text(
-                        "Action Roll",
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
+              ElevatedButton(
+                onPressed: actionRoll,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
                   ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => oracleRoll(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Text(
-                        "Oracle Roll",
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  ),
-                ],
+                  child: Text('Action Roll'),
+                ),
               ),
-
-              SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var entry in _selectedStats.entries)
-                      Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: ChoiceChip(
-                          label: Text(
-                            entry.key.toString().split('.').last.toUpperCase(),
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          selected: entry.value,
-                          onSelected: (selected) => _toggleStat(entry.key),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                        ),
-                      ),
-                  ],
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: oracleRoll,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: Text('Oracle Roll'),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 20),
+          if (isActionRoll) ...[
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var entry in _selectedStats.entries)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: ChoiceChip(
+                        label: Text(
+                          entry.key.toString().split('.').last.toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        selected: entry.value,
+                        onSelected: (selected) => _toggleStat(entry.key),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (actionDie > 0) ...[RollResultCard(d6: actionDie, d10s: d10s)],
+          ],
+          if (isOracleRoll) ...[RollResultCard.d100(d100: d100)],
         ],
       ),
     );

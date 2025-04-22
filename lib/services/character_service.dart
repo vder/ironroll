@@ -1,16 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
 
-class CharacterProvider with ChangeNotifier {
+class CharacterService {
   late Box<Character> _characterBox;
   late Character user;
 
-  CharacterProvider() {
-    _initializeHive();
-  }
-
-  Future<void> _initializeHive() async {
+  Future<void> initialize() async {
     _characterBox = await Hive.openBox<Character>('character');
     if (_characterBox.isEmpty) {
       user = Character.create(
@@ -25,7 +20,6 @@ class CharacterProvider with ChangeNotifier {
     } else {
       user = _characterBox.get('current')!;
     }
-    notifyListeners();
   }
 
   Character get stats => user;
@@ -40,7 +34,6 @@ class CharacterProvider with ChangeNotifier {
   Future<void> updateName(String name) async {
     user.name = name;
     await _characterBox.put('current', user);
-    notifyListeners();
   }
 
   int getStatFromEnum(StatName stat) {
@@ -80,7 +73,6 @@ class CharacterProvider with ChangeNotifier {
           user.wits = Stat(name: StatName.wits, value: value);
       }
       await _characterBox.put('current', user);
-      notifyListeners();
     }
   }
 

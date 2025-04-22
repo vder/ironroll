@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ironroll/providers/character_stats_provider.dart';
-import 'package:provider/provider.dart';
 
 class StatBox extends StatelessWidget {
   const StatBox({
     super.key,
-    required this.context,
     required this.label,
     required this.value,
+    required this.onIncrement,
+    required this.onDecrement,
   });
 
-  final BuildContext context;
   final String label;
   final int value;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
 
   @override
   Widget build(BuildContext context) {
-    // Get the provider
-    final characterProvider = Provider.of<CharacterProvider>(context);
-
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -59,7 +56,7 @@ class StatBox extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${characterProvider.getStat(label)}',
+                      '$value',
                       style: GoogleFonts.robotoCondensed(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -72,23 +69,23 @@ class StatBox extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   InkWell(
-                    onTap: () => characterProvider.incrementStat(label),
+                    onTap: value < 5 ? onIncrement : null,
                     child: Icon(
                       Icons.arrow_drop_up,
                       size: 36,
                       color:
-                          characterProvider.getStat(label) < 5
+                          value < 5
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey[300],
                     ),
                   ),
                   InkWell(
-                    onTap: () => characterProvider.decrementStat(label),
+                    onTap: value > 0 ? onDecrement : null,
                     child: Icon(
                       Icons.arrow_drop_down,
                       size: 36,
                       color:
-                          characterProvider.getStat(label) > 0
+                          value > 0
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey[300],
                     ),

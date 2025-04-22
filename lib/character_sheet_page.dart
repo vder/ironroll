@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ironroll/widgets/vertical_track.dart';
 import 'package:ironroll/widgets/stat_box.dart';
-import 'package:provider/provider.dart';
-import 'package:ironroll/providers/character_stats_provider.dart';
 import 'package:ironroll/widgets/progress_track/progress_track_list.dart';
+import 'package:ironroll/services/character_service.dart';
 
 class CharacterSheetPage extends StatefulWidget {
-  const CharacterSheetPage({super.key});
+  final CharacterService characterService;
+
+  const CharacterSheetPage({super.key, required this.characterService});
 
   @override
   State<CharacterSheetPage> createState() => _CharacterSheetPageState();
@@ -26,6 +27,20 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
     "Battered": false,
     "Cursed": false,
   };
+
+  final _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.characterService.stats.name;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   Widget checkboxLabel(String text) {
     return Container(
@@ -89,8 +104,6 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
 
   @override
   Widget build(BuildContext context) {
-    final characterProvider = Provider.of<CharacterProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -111,12 +124,16 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: TextFormField(
-                            decoration: _buildInputDecoration('Name'),
-                            initialValue: characterProvider.user.name,
-                            onChanged:
-                                (value) => characterProvider.updateName(value),
-                            style: GoogleFonts.robotoCondensed(),
+                          child: TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Character Name',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (value) async {
+                              await widget.characterService.updateName(value);
+                              setState(() {});
+                            },
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -144,32 +161,97 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                           children: [
                             sectionTitle("Stats"),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 StatBox(
-                                  context: context,
                                   label: 'EDGE',
-                                  value: 0,
+                                  value: widget.characterService.getStat(
+                                    'EDGE',
+                                  ),
+                                  onIncrement: () async {
+                                    await widget.characterService.incrementStat(
+                                      'EDGE',
+                                    );
+                                    setState(() {});
+                                  },
+                                  onDecrement: () async {
+                                    await widget.characterService.decrementStat(
+                                      'EDGE',
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                                 StatBox(
-                                  context: context,
                                   label: 'HEART',
-                                  value: 0,
+                                  value: widget.characterService.getStat(
+                                    'HEART',
+                                  ),
+                                  onIncrement: () async {
+                                    await widget.characterService.incrementStat(
+                                      'HEART',
+                                    );
+                                    setState(() {});
+                                  },
+                                  onDecrement: () async {
+                                    await widget.characterService.decrementStat(
+                                      'HEART',
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                                 StatBox(
-                                  context: context,
                                   label: 'IRON',
-                                  value: 0,
+                                  value: widget.characterService.getStat(
+                                    'IRON',
+                                  ),
+                                  onIncrement: () async {
+                                    await widget.characterService.incrementStat(
+                                      'IRON',
+                                    );
+                                    setState(() {});
+                                  },
+                                  onDecrement: () async {
+                                    await widget.characterService.decrementStat(
+                                      'IRON',
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                                 StatBox(
-                                  context: context,
                                   label: 'SHADOW',
-                                  value: 0,
+                                  value: widget.characterService.getStat(
+                                    'SHADOW',
+                                  ),
+                                  onIncrement: () async {
+                                    await widget.characterService.incrementStat(
+                                      'SHADOW',
+                                    );
+                                    setState(() {});
+                                  },
+                                  onDecrement: () async {
+                                    await widget.characterService.decrementStat(
+                                      'SHADOW',
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                                 StatBox(
-                                  context: context,
                                   label: 'WITS',
-                                  value: 0,
+                                  value: widget.characterService.getStat(
+                                    'WITS',
+                                  ),
+                                  onIncrement: () async {
+                                    await widget.characterService.incrementStat(
+                                      'WITS',
+                                    );
+                                    setState(() {});
+                                  },
+                                  onDecrement: () async {
+                                    await widget.characterService.decrementStat(
+                                      'WITS',
+                                    );
+                                    setState(() {});
+                                  },
                                 ),
                               ],
                             ),
