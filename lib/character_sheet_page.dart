@@ -244,21 +244,7 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                         ),
                       ),
                     ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            sectionTitle("Quests"),
-                            SizedBox(
-                              height: 400, // dopasuj jak chcesz
-                              child: ProgressTrackList(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    ProgressTrackList(),
 
                     const SizedBox(height: 16),
                     // Footer Controls
