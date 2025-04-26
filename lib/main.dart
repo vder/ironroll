@@ -2,10 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:ironroll/rolls_page.dart';
 import 'package:ironroll/character_sheet_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ironroll/widgets/oracle_tree.dart';
 import 'models/track_data.dart';
 import 'models/user.dart';
 import 'models/quest.dart';
 import 'services/character_service.dart';
+import 'dart:convert'; // do jsonDecode
+import 'package:flutter/services.dart' show rootBundle; // do rootBundle
+
+late Map<String, dynamic> oraclesData;
+
+Future<void> loadOracles() async {
+  final String jsonString = await rootBundle.loadString('assets/oracles.json');
+  final Map<String, dynamic> jsonMap = json.decode(jsonString);
+  oraclesData = jsonMap;
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +30,7 @@ void main() async {
 
   final characterService = CharacterService();
   await characterService.initialize();
+  await loadOracles();
 
   runApp(MyApp(characterService: characterService));
 }
@@ -63,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = RollsPage(characterService: widget.characterService);
       case 1:
         page = CharacterSheetPage(characterService: widget.characterService);
+      case 2:
+        page = OraclesTree(oraclesData: oraclesData);
     }
     return Scaffold(
       body: Container(
@@ -79,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.casino), label: 'Rolls'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Character'),
+          NavigationDestination(icon: Icon(Icons.lightbulb), label: 'Oracles'),
         ],
       ),
     );
