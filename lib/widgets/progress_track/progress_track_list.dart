@@ -67,38 +67,47 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
         // Input row
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Quest Name',
-                    border: OutlineInputBorder(),
-                  ),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Quest Name',
+                  border: OutlineInputBorder(),
                 ),
               ),
+
               const SizedBox(width: 8),
-              DropdownButton<QuestRank>(
-                value: _selectedRank,
-                onChanged: (rank) {
-                  if (rank != null) {
-                    setState(() => _selectedRank = rank);
-                  }
-                },
-                items:
-                    QuestRank.values.map((rank) {
-                      return DropdownMenuItem(
-                        value: rank,
-                        child: Text(_getRankLabel(rank)),
-                      );
-                    }).toList(),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: _addQuest,
-                icon: const Icon(Icons.add),
-                label: const Text("Add"),
+              Row(
+                children: [
+                  DropdownButton<QuestRank>(
+                    value: _selectedRank,
+                    onChanged: (rank) {
+                      if (rank != null) {
+                        setState(() => _selectedRank = rank);
+                      }
+                    },
+                    items:
+                        QuestRank.values.map((rank) {
+                          return DropdownMenuItem(
+                            value: rank,
+                            child: Text(
+                              _getRankLabel(rank),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: _addQuest,
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add"),
+                  ),
+                ],
               ),
             ],
           ),

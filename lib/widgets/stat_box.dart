@@ -18,6 +18,7 @@ class StatBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints(maxWidth: 230, minWidth: 180),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -30,8 +31,7 @@ class StatBox extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
           Text(
             label,
@@ -40,57 +40,52 @@ class StatBox extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Row(
-            children: [
-              Container(
-                width: 65,
-                height: 65,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
+          Spacer(),
+          Container(
+            width: 65,
+            height: 65,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).colorScheme.primary),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$value',
+                  style: GoogleFonts.robotoCondensed(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$value',
-                      style: GoogleFonts.robotoCondensed(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              ],
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                onTap: value < 5 ? onIncrement : null,
+                child: Icon(
+                  Icons.arrow_drop_up,
+                  size: 36,
+                  color:
+                      value < 5
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[300],
                 ),
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: value < 5 ? onIncrement : null,
-                    child: Icon(
-                      Icons.arrow_drop_up,
-                      size: 36,
-                      color:
-                          value < 5
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: value > 0 ? onDecrement : null,
-                    child: Icon(
-                      Icons.arrow_drop_down,
-                      size: 36,
-                      color:
-                          value > 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
-                    ),
-                  ),
-                ],
+              InkWell(
+                onTap: value > 0 ? onDecrement : null,
+                child: Icon(
+                  Icons.arrow_drop_down,
+                  size: 36,
+                  color:
+                      value > 0
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[300],
+                ),
               ),
             ],
           ),

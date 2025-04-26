@@ -5,8 +5,7 @@ class ProgressTrack extends StatefulWidget {
   final Quest quest;
   final void Function(Quest)? onChanged;
 
-  const ProgressTrack({Key? key, required this.quest, this.onChanged})
-    : super(key: key);
+  const ProgressTrack({super.key, required this.quest, this.onChanged});
 
   @override
   State<ProgressTrack> createState() => _ProgressTrackState();
@@ -83,37 +82,38 @@ class _ProgressTrackState extends State<ProgressTrack> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Quest name
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
-                _quest.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+        Container(
+          constraints: const BoxConstraints(maxWidth: 220, minWidth: 180),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: Text(
+              _quest.name,
+              softWrap: true,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
               ),
             ),
-            const SizedBox(width: 16),
-            // Rank dropdown
-            DropdownButton<QuestRank>(
-              value: _quest.rank,
-              style: const TextStyle(fontSize: 12, color: Colors.black),
-              onChanged: (rank) {
-                if (rank != null) _updateRank(rank);
-              },
-              items:
-                  QuestRank.values.map((rank) {
-                    return DropdownMenuItem(
-                      value: rank,
-                      child: Text(getRankLabel(rank)),
-                    );
-                  }).toList(),
-            ),
-          ],
-        ),
+          ),
 
+          // Rank dropdown
+        ),
+        DropdownButton<QuestRank>(
+          value: _quest.rank,
+          style: const TextStyle(fontSize: 12, color: Colors.black),
+          onChanged: (rank) {
+            if (rank != null) _updateRank(rank);
+          },
+          items:
+              QuestRank.values.map((rank) {
+                return DropdownMenuItem(
+                  value: rank,
+                  child: Text(getRankLabel(rank)),
+                );
+              }).toList(),
+        ),
         const SizedBox(height: 8),
 
         // Progress boxes
@@ -125,9 +125,9 @@ class _ProgressTrackState extends State<ProgressTrack> {
             children: List.generate(10, (boxIndex) {
               int boxTicks = (_quest.progress - boxIndex * 4).clamp(0, 4);
               return Container(
-                margin: const EdgeInsets.all(4),
-                width: 32,
-                height: 32,
+                margin: const EdgeInsets.all(2),
+                width: 24,
+                height: 24,
                 child: Icon(_iconForTicks(boxTicks), size: 24),
               );
             }),

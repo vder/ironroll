@@ -160,100 +160,86 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                         child: Column(
                           children: [
                             sectionTitle("Stats"),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                StatBox(
-                                  label: 'EDGE',
-                                  value: widget.characterService.getStat(
-                                    'EDGE',
-                                  ),
-                                  onIncrement: () async {
-                                    await widget.characterService.incrementStat(
-                                      'EDGE',
-                                    );
-                                    setState(() {});
-                                  },
-                                  onDecrement: () async {
-                                    await widget.characterService.decrementStat(
-                                      'EDGE',
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                                StatBox(
-                                  label: 'HEART',
-                                  value: widget.characterService.getStat(
-                                    'HEART',
-                                  ),
-                                  onIncrement: () async {
-                                    await widget.characterService.incrementStat(
-                                      'HEART',
-                                    );
-                                    setState(() {});
-                                  },
-                                  onDecrement: () async {
-                                    await widget.characterService.decrementStat(
-                                      'HEART',
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                                StatBox(
-                                  label: 'IRON',
-                                  value: widget.characterService.getStat(
-                                    'IRON',
-                                  ),
-                                  onIncrement: () async {
-                                    await widget.characterService.incrementStat(
-                                      'IRON',
-                                    );
-                                    setState(() {});
-                                  },
-                                  onDecrement: () async {
-                                    await widget.characterService.decrementStat(
-                                      'IRON',
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                                StatBox(
-                                  label: 'SHADOW',
-                                  value: widget.characterService.getStat(
-                                    'SHADOW',
-                                  ),
-                                  onIncrement: () async {
-                                    await widget.characterService.incrementStat(
-                                      'SHADOW',
-                                    );
-                                    setState(() {});
-                                  },
-                                  onDecrement: () async {
-                                    await widget.characterService.decrementStat(
-                                      'SHADOW',
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                                StatBox(
-                                  label: 'WITS',
-                                  value: widget.characterService.getStat(
-                                    'WITS',
-                                  ),
-                                  onIncrement: () async {
-                                    await widget.characterService.incrementStat(
-                                      'WITS',
-                                    );
-                                    setState(() {});
-                                  },
-                                  onDecrement: () async {
-                                    await widget.characterService.decrementStat(
-                                      'WITS',
-                                    );
-                                    setState(() {});
-                                  },
-                                ),
-                              ],
+
+                            StatBox(
+                              label: 'EDGE',
+                              value: widget.characterService.getStat('EDGE'),
+                              onIncrement: () async {
+                                await widget.characterService.incrementStat(
+                                  'EDGE',
+                                );
+                                setState(() {});
+                              },
+                              onDecrement: () async {
+                                await widget.characterService.decrementStat(
+                                  'EDGE',
+                                );
+                                setState(() {});
+                              },
+                            ),
+                            StatBox(
+                              label: 'HEART',
+                              value: widget.characterService.getStat('HEART'),
+                              onIncrement: () async {
+                                await widget.characterService.incrementStat(
+                                  'HEART',
+                                );
+                                setState(() {});
+                              },
+                              onDecrement: () async {
+                                await widget.characterService.decrementStat(
+                                  'HEART',
+                                );
+                                setState(() {});
+                              },
+                            ),
+                            StatBox(
+                              label: 'IRON',
+                              value: widget.characterService.getStat('IRON'),
+                              onIncrement: () async {
+                                await widget.characterService.incrementStat(
+                                  'IRON',
+                                );
+                                setState(() {});
+                              },
+                              onDecrement: () async {
+                                await widget.characterService.decrementStat(
+                                  'IRON',
+                                );
+                                setState(() {});
+                              },
+                            ),
+                            StatBox(
+                              label: 'SHADOW',
+                              value: widget.characterService.getStat('SHADOW'),
+                              onIncrement: () async {
+                                await widget.characterService.incrementStat(
+                                  'SHADOW',
+                                );
+                                setState(() {});
+                              },
+                              onDecrement: () async {
+                                await widget.characterService.decrementStat(
+                                  'SHADOW',
+                                );
+                                setState(() {});
+                              },
+                            ),
+                            StatBox(
+                              label: 'WITS',
+                              value: widget.characterService.getStat('WITS'),
+                              onIncrement: () async {
+                                await widget.characterService.incrementStat(
+                                  'WITS',
+                                );
+                                setState(() {});
+                              },
+                              onDecrement: () async {
+                                await widget.characterService.decrementStat(
+                                  'WITS',
+                                );
+                                setState(() {});
+                              },
                             ),
                           ],
                         ),
