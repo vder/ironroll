@@ -114,7 +114,7 @@ class _RollsPageState extends State<RollsPage> {
                       padding: const EdgeInsets.only(right: 4),
                       child: ChoiceChip(
                         label: Text(
-                          entry.key.toString().split('.').last.toUpperCase(),
+                          "${entry.key.toString().split('.').last.toUpperCase()}(${widget.characterService.getStatFromEnum(entry.key)})",
                           style: const TextStyle(fontSize: 12),
                         ),
                         selected: entry.value,
