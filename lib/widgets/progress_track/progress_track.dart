@@ -95,7 +95,6 @@ class _ProgressTrackState extends State<ProgressTrack> {
                 );
               }).toList(),
         ),
-        const SizedBox(height: 8),
 
         // Progress boxes
         GestureDetector(

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ironroll/models/quest.dart';
@@ -86,7 +84,7 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
                     children: [
                       // Input row
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(1.0),
                         child: Column(
                           children: [
                             TextField(
@@ -96,8 +94,6 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
                                 border: OutlineInputBorder(),
                               ),
                             ),
-
-                            const SizedBox(width: 8),
                             Row(
                               children: [
                                 DropdownButton<QuestRank>(
@@ -157,7 +153,7 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
                                     horizontal: 8,
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.all(4.0),
                                     child: Column(
                                       children: [
                                         Row(
@@ -201,25 +197,22 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
                                             ),
                                           ],
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              // Pass only the progress-related data to ProgressTrack
-                                              ProgressTrack(
-                                                quest: quest,
-                                                onChanged:
-                                                    (updatedQuest) =>
-                                                        _updateQuest(
-                                                          questBox,
-                                                          index,
-                                                          updatedQuest,
-                                                        ),
-                                              ),
-                                            ],
-                                          ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            // Pass only the progress-related data to ProgressTrack
+                                            ProgressTrack(
+                                              quest: quest,
+                                              onChanged:
+                                                  (updatedQuest) =>
+                                                      _updateQuest(
+                                                        questBox,
+                                                        index,
+                                                        updatedQuest,
+                                                      ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
