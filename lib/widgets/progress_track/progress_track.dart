@@ -81,25 +81,6 @@ class _ProgressTrackState extends State<ProgressTrack> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Quest name
-        Container(
-          constraints: const BoxConstraints(maxWidth: 220, minWidth: 180),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Text(
-              _quest.name,
-              softWrap: true,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ),
-
-          // Rank dropdown
-        ),
         DropdownButton<QuestRank>(
           value: _quest.rank,
           style: const TextStyle(fontSize: 12, color: Colors.black),
@@ -126,8 +107,8 @@ class _ProgressTrackState extends State<ProgressTrack> {
               int boxTicks = (_quest.progress - boxIndex * 4).clamp(0, 4);
               return Container(
                 margin: const EdgeInsets.all(2),
-                width: 24,
-                height: 24,
+                width: 20,
+                height: 20,
                 child: Icon(_iconForTicks(boxTicks), size: 24),
               );
             }),

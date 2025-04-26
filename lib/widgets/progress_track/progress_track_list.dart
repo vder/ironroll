@@ -119,6 +119,7 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
             valueListenable: _questBox.listenable(),
             builder: (context, box, _) {
               return ReorderableListView.builder(
+                buildDefaultDragHandles: false,
                 padding: const EdgeInsets.only(bottom: 16),
                 itemCount: box.length,
                 onReorder: _reorderQuests,
@@ -135,24 +136,48 @@ class _ProgressTrackListState extends State<ProgressTrackList> {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              // Display quest name with drag functionality
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 200,
+                                ),
+                                child: ReorderableDragStartListener(
+                                  index: index,
+                                  child: Text(
+                                    quest.name,
+                                    softWrap: true,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _removeQuest(index),
+                              ),
+                            ],
+                          ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                // Pass only the progress-related data to ProgressTrack
                                 ProgressTrack(
                                   quest: quest,
                                   onChanged:
                                       (updatedQuest) =>
                                           _updateQuest(index, updatedQuest),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () => _removeQuest(index),
                                 ),
                               ],
                             ),

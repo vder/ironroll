@@ -316,27 +316,23 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                               current: 2,
                               max: 10,
                             ),
-                            Column(
-                              children: [
-                                VerticalTrack(
-                                  label: 'Health',
-                                  min: 0,
-                                  current: 4,
-                                  max: 5,
-                                ),
-                                VerticalTrack(
-                                  label: 'Spirit',
-                                  min: 0,
-                                  current: 3,
-                                  max: 5,
-                                ),
-                                VerticalTrack(
-                                  label: 'Supply',
-                                  min: 0,
-                                  current: 3,
-                                  max: 5,
-                                ),
-                              ],
+                            VerticalTrack(
+                              label: 'Health',
+                              min: 0,
+                              current: 4,
+                              max: 5,
+                            ),
+                            VerticalTrack(
+                              label: 'Spirit',
+                              min: 0,
+                              current: 3,
+                              max: 5,
+                            ),
+                            VerticalTrack(
+                              label: 'Supply',
+                              min: 0,
+                              current: 3,
+                              max: 5,
                             ),
                           ],
                         ),
