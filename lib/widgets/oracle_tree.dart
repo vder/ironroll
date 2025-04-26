@@ -12,17 +12,25 @@ class OraclesTree extends StatefulWidget {
 }
 
 class _OraclesTreeState extends State<OraclesTree> {
-  final Map<String, String> _rolledResults = {}; // Wyniki losowań
-  final List<Map<String, dynamic>> _oracleRollables =
-      []; // Wszystkie znalezione oracles
-  final Map<String, dynamic> _oracleTree =
-      {}; // Drzewo oracle na podstawie path
+  final Map<String, String> _rolledResults = {};
+  final List<Map<String, dynamic>> _oracleRollables = [];
+  final Map<String, dynamic> _oracleTree = {};
+  final TextEditingController _searchController = TextEditingController();
+  final Set<String> _expandedPaths = {};
+
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _findAllRollableOracles(widget.oraclesData["oracles"]);
+    _findAllRollableOracles(widget.oraclesData['oracles']);
     _buildOracleTree();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _findAllRollableOracles(
@@ -31,13 +39,8 @@ class _OraclesTreeState extends State<OraclesTree> {
   ]) {
     node.forEach((key, value) {
       if (key == 'contents' || key == 'collections') {
-        // Pomiń 'contents' i 'collections' w ścieżkach
         if (value is Map) {
-          final mapValue = Map<String, dynamic>.from(value);
-          _findAllRollableOracles(
-            mapValue,
-            parentPath,
-          ); // Nie zmieniaj parentPath
+          _findAllRollableOracles(Map<String, dynamic>.from(value), parentPath);
         } else if (value is List) {
           for (var item in value) {
             if (item is Map) {
@@ -86,9 +89,8 @@ class _OraclesTreeState extends State<OraclesTree> {
 
       for (var i = 0; i < parts.length; i++) {
         final part = parts[i];
-
         if (i == parts.length - 1) {
-          current[part] = oracle; // Na końcu wstawiamy oracle (plik)
+          current[part] = oracle;
         } else {
           current =
               current.putIfAbsent(part, () => <String, dynamic>{})
@@ -98,66 +100,157 @@ class _OraclesTreeState extends State<OraclesTree> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView(children: _buildTree(_oracleTree));
+  void _updateExpandedPaths() {
+    _expandedPaths.clear();
+
+    if (_searchQuery.isEmpty) return;
+
+    final lowerQuery = _searchQuery.toLowerCase();
+
+    for (final oracle in _oracleRollables) {
+      final path = oracle['path'] as String;
+      final name = oracle['name'] as String;
+
+      if (path.toLowerCase().contains(lowerQuery) ||
+          name.toLowerCase().contains(lowerQuery)) {
+        final parts = path.split('/');
+        String accumulated = '';
+        for (var part in parts.take(parts.length - 1)) {
+          accumulated = accumulated.isEmpty ? part : '$accumulated/$part';
+          _expandedPaths.add(accumulated);
+        }
+      }
+    }
   }
 
-  List<Widget> _buildTree(Map<String, dynamic> node) {
+  Map<String, dynamic> _buildFilteredTree() {
+    final lowerQuery = _searchQuery.toLowerCase();
+    final Map<String, dynamic> filteredTree = {};
+
+    for (final oracle in _oracleRollables) {
+      final path = oracle['path'] as String;
+      final name = oracle['name'] as String;
+
+      if (path.toLowerCase().contains(lowerQuery) ||
+          name.toLowerCase().contains(lowerQuery)) {
+        final parts = path.split('/');
+        Map<String, dynamic> current = filteredTree;
+
+        for (var i = 0; i < parts.length; i++) {
+          final part = parts[i];
+          if (i == parts.length - 1) {
+            current[part] = oracle;
+          } else {
+            current =
+                current.putIfAbsent(part, () => <String, dynamic>{})
+                    as Map<String, dynamic>;
+          }
+        }
+      }
+    }
+
+    return filteredTree;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showingTree =
+        _searchQuery.isNotEmpty ? _buildFilteredTree() : _oracleTree;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Szukaj oracla...',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+                _updateExpandedPaths();
+              });
+            },
+          ),
+        ),
+        Expanded(child: ListView(children: _buildTree(showingTree))),
+      ],
+    );
+  }
+
+  List<Widget> _buildTree(
+    Map<String, dynamic> node, [
+    String parentPath = '',
+    int depth = 0,
+  ]) {
     List<Widget> widgets = [];
 
     node.forEach((key, value) {
+      final currentPath = parentPath.isEmpty ? key : '$parentPath/$key';
+
       if (value is Map<String, dynamic> &&
           !(value.containsKey('path') && value.containsKey('rows'))) {
-        // Jeśli to folder, robimy ExpansionTile
         widgets.add(
-          ExpansionTile(
-            title: Row(
-              children: [
-                const Icon(Icons.folder),
-                const SizedBox(width: 8),
-                Text(key, style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
+          Padding(
+            padding: EdgeInsets.only(left: 16.0 * depth),
+            child: ExpansionTile(
+              title: Row(
+                children: [
+                  const Icon(Icons.folder),
+                  const SizedBox(width: 8),
+                  Text(
+                    key,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              initiallyExpanded: _expandedPaths.contains(currentPath),
+              children: _buildTree(value, currentPath, depth + 1),
             ),
-            children: _buildTree(value),
           ),
         );
       } else if (value is Map<String, dynamic>) {
-        // Jeśli to oracle do losowania
-        final oraclePath = value['path'];
-        final oracleName = value['name'];
-        final rows = value['rows'];
-
-        widgets.add(
-          ListTile(
-            title: Row(
-              children: [
-                const Icon(Icons.casino),
-                const SizedBox(width: 8),
-                Expanded(child: Text(oracleName)),
-                IconButton(
-                  icon: const Icon(Icons.casino),
-                  tooltip: 'Rzuć kością',
-                  onPressed: () => _rollAndShow(oraclePath, rows),
-                ),
-              ],
-            ),
-            subtitle:
-                _rolledResults.containsKey(oraclePath)
-                    ? Text(_rolledResults[oraclePath]!)
-                    : null,
-          ),
-        );
+        widgets.add(_buildOracleTile(value, depth));
       }
     });
 
     return widgets;
   }
 
+  Widget _buildOracleTile(Map<String, dynamic> oracle, int depth) {
+    final oraclePath = oracle['path'];
+    final oracleName = oracle['name'];
+    final rows = oracle['rows'];
+
+    return Padding(
+      padding: EdgeInsets.only(left: 16.0 * depth),
+      child: ListTile(
+        title: Row(
+          children: [
+            const Icon(Icons.casino),
+            const SizedBox(width: 8),
+            Expanded(child: Text(oracleName)),
+            IconButton(
+              icon: const Icon(Icons.casino),
+              tooltip: 'Rzuć kością',
+              onPressed: () => _rollAndShow(oraclePath, rows),
+            ),
+          ],
+        ),
+        subtitle:
+            _rolledResults.containsKey(oraclePath)
+                ? Text(_rolledResults[oraclePath]!)
+                : null,
+      ),
+    );
+  }
+
   void _rollAndShow(String oracleKey, List<dynamic> rows) {
     final random = Random();
 
-    // Znajdujemy oracle, żeby pobrać dice
     final oracle = _oracleRollables.firstWhere(
       (o) => o['path'] == oracleKey,
       orElse: () => {},
@@ -180,14 +273,21 @@ class _OraclesTreeState extends State<OraclesTree> {
     int roll;
     Map<String, dynamic> randomRow;
 
-    // Oracle z min/max: losowanie 1-dice i szukanie wiersza min/max
     roll = random.nextInt(diceSides) + 1;
 
-    randomRow = nonEmptyRows.firstWhere((row) {
-      final min = row['min'] ?? 0;
-      final max = row['max'] ?? 0;
-      return roll >= min && roll <= max;
-    }, orElse: () => {'text': 'Brak wyniku', 'text2': ''});
+    if (nonEmptyRows.isNotEmpty) {
+      randomRow = nonEmptyRows.firstWhere((row) {
+        final min = row['min'] ?? 0;
+        final max = row['max'] ?? 0;
+        return roll >= min && roll <= max;
+      }, orElse: () => {'text': 'Brak wyniku', 'text2': ''});
+    } else {
+      if (roll <= rows.length) {
+        randomRow = rows[roll - 1];
+      } else {
+        randomRow = rows.last;
+      }
+    }
 
     final textRaw = randomRow['text'] ?? 'Brak tekstu';
     final text2Raw = randomRow['text2'] ?? '';
@@ -214,7 +314,6 @@ class _OraclesTreeState extends State<OraclesTree> {
     Clipboard.setData(ClipboardData(text: result));
   }
 
-  /// Pomocnicza funkcja - parsujemy ile ścianek ma kostka np. "1d100" -> 100
   int _parseDiceSides(String dice) {
     final match = RegExp(r'1d(\d+)').firstMatch(dice);
     if (match != null) {
