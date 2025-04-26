@@ -160,7 +160,6 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                         child: Column(
                           children: [
                             sectionTitle("Stats"),
-
                             StatBox(
                               label: 'EDGE',
                               value: widget.characterService.getStat('EDGE'),
@@ -245,50 +244,9 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                         ),
                       ),
                     ),
-
-                    // Impacts
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            sectionTitle("Impacts"),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  impacts.keys
-                                      .map((impact) => checkboxLabel(impact))
-                                      .toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Assets
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            sectionTitle("Assets"),
-                            TextFormField(
-                              decoration: _buildInputDecoration(
-                                'List assets, items, starships, etc.',
-                              ),
-                              style: GoogleFonts.robotoCondensed(),
-                              maxLines: 4,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(2.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -305,37 +263,34 @@ class _CharacterSheetPageState extends State<CharacterSheetPage> {
                     const SizedBox(height: 16),
                     // Footer Controls
                     Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            VerticalTrack(
-                              label: 'Momentum',
-                              min: -6,
-                              current: 2,
-                              max: 10,
-                            ),
-                            VerticalTrack(
-                              label: 'Health',
-                              min: 0,
-                              current: 4,
-                              max: 5,
-                            ),
-                            VerticalTrack(
-                              label: 'Spirit',
-                              min: 0,
-                              current: 3,
-                              max: 5,
-                            ),
-                            VerticalTrack(
-                              label: 'Supply',
-                              min: 0,
-                              current: 3,
-                              max: 5,
-                            ),
-                          ],
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          VerticalTrack(
+                            label: 'Momentum',
+                            min: -6,
+                            current: 2,
+                            max: 10,
+                          ),
+                          VerticalTrack(
+                            label: 'Health',
+                            min: 0,
+                            current: 4,
+                            max: 5,
+                          ),
+                          VerticalTrack(
+                            label: 'Spirit',
+                            min: 0,
+                            current: 3,
+                            max: 5,
+                          ),
+                          VerticalTrack(
+                            label: 'Supply',
+                            min: 0,
+                            current: 3,
+                            max: 5,
+                          ),
+                        ],
                       ),
                     ),
                   ],

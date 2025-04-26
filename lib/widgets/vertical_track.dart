@@ -70,7 +70,7 @@ class _VerticalTrackState extends State<VerticalTrack> {
         },
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 2),
           width: 50,
           decoration: BoxDecoration(
             color:
@@ -127,7 +127,34 @@ class _VerticalTrackState extends State<VerticalTrack> {
             ),
           ),
           padding: const EdgeInsets.all(4),
-          child: Column(children: blocks),
+          child: SizedBox(
+            width: blocks.length / 6 * 50,
+            height: 280, // Fixed height for all tracks
+            child:
+                blocks.length > 6
+                    ? GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      primary: false,
+                      padding: const EdgeInsets.all(2),
+                      crossAxisSpacing: 6,
+                      mainAxisSpacing: 3,
+                      crossAxisCount: 3, // Always 2 columns for consistency
+                      childAspectRatio: 1, // Adjust for card shape
+                      children: blocks,
+                    )
+                    : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: List.generate(
+                        6, // Always 6 slots for visual consistency
+                        (i) =>
+                            i < blocks.length
+                                ? blocks[i]
+                                : const SizedBox(
+                                  height: 40, // Match block height+margin
+                                ),
+                      ),
+                    ),
+          ),
         ),
       ],
     );
