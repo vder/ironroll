@@ -26,7 +26,7 @@ class CharacterService {
 
   int getStat(String label) {
     final statName = StatName.values.firstWhere(
-      (e) => e.toString().split('.').last.toUpperCase() == label,
+      (e) => e.toString().split('.').last == label,
     );
     return getStatFromEnum(statName);
   }
@@ -53,7 +53,7 @@ class CharacterService {
 
   Future<void> updateStat(String label, int value) async {
     final statName = StatName.values.firstWhere(
-      (e) => e.toString().split('.').last.toUpperCase() == label,
+      (e) => e.toString().split('.').last == label,
     );
     await updateStatFromEnum(statName, value);
   }
@@ -78,7 +78,7 @@ class CharacterService {
 
   Future<void> incrementStat(String label) async {
     final statName = StatName.values.firstWhere(
-      (e) => e.toString().split('.').last.toUpperCase() == label,
+      (e) => e.toString().split('.').last == label,
     );
     await incrementStatFromEnum(statName);
   }
@@ -92,7 +92,7 @@ class CharacterService {
 
   Future<void> decrementStat(String label) async {
     final statName = StatName.values.firstWhere(
-      (e) => e.toString().split('.').last.toUpperCase() == label,
+      (e) => e.toString().split('.').last == label,
     );
     await decrementStatFromEnum(statName);
   }
