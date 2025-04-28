@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ironroll/models/roll.dart';
 import 'package:ironroll/services/character_service.dart';
 import 'package:ironroll/models/user.dart';
 import 'package:ironroll/widgets/roll_result_card.dart';
-import 'dart:math';
 
 class RollsPage extends StatefulWidget {
   final CharacterService characterService;
@@ -14,126 +14,113 @@ class RollsPage extends StatefulWidget {
 }
 
 class _RollsPageState extends State<RollsPage> {
-  bool isActionRoll = true;
-  bool isOracleRoll = false;
-  final Map<StatName, bool> _selectedStats = {
-    StatName.edge: false,
-    StatName.heart: false,
-    StatName.iron: false,
-    StatName.shadow: false,
-    StatName.wits: false,
-  };
-  int actionDie = 0;
-  List<int> d10s = [];
-  int d100 = 0;
+  Roll? roll;
+  int modifier = 0;
+  StatName? statName;
 
-  void actionRoll() {
-    int increase = 0;
-    _selectedStats.forEach((stat, isSelected) {
-      if (isSelected) {
-        increase += widget.characterService.getStatFromEnum(stat);
-      }
-    });
-
+  void doActionRoll() {
     setState(() {
-      actionDie = Random().nextInt(6) + 1 + increase;
-      d10s = List.generate(2, (index) => Random().nextInt(10) + 1);
-      isActionRoll = true;
-      isOracleRoll = false;
+      roll = ActionRoll(
+        statValue:
+            (statName != null)
+                ? widget.characterService.getStatFromEnum(statName!)
+                : 0,
+        modifier: modifier,
+      );
     });
   }
 
-  void oracleRoll() {
+  void doOracleRoll() {
     setState(() {
-      d100 = Random().nextInt(100) + 1;
-      isOracleRoll = true;
-      isActionRoll = false;
-    });
-  }
-
-  void _toggleStat(StatName stat) {
-    setState(() {
-      // First, set all stats to false
-      for (var key in _selectedStats.keys) {
-        if (key != stat) {
-          _selectedStats[key] = false;
-        } else {
-          // Then, set the selected stat to true
-          _selectedStats[key] = !_selectedStats[key]!;
-        }
-      }
+      roll = OracleRoll();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'Character: ${widget.characterService.stats.name}',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: actionRoll,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: Text('Action Roll'),
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Character: ${widget.characterService.stats.name}',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: doActionRoll,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text('Action Roll'),
               ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: oracleRoll,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: Text('Oracle Roll'),
-                ),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: doOracleRoll,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text('Oracle Roll'),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (isActionRoll) ...[
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (var entry in _selectedStats.entries)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: ChoiceChip(
-                        label: Text(
-                          "${entry.key.toString().split('.').last.toUpperCase()}(${widget.characterService.getStatFromEnum(entry.key)})",
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        selected: entry.value,
-                        onSelected: (selected) => _toggleStat(entry.key),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Stat"),
+                DropdownButton(
+                  value: statName,
+                  items: [
+                    const DropdownMenuItem<StatName?>(
+                      value: null,
+                      child: Text('NONE'), // or '-', or whatever you want
+                    ),
+                    ...StatName.values.map(
+                      (statName) => DropdownMenuItem(
+                        value: statName,
+                        child: Text(
+                          "${statName.name.toUpperCase()} (${widget.characterService.getStatFromEnum(statName)})",
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ],
+                  onChanged: (mod) => setState(() => statName = mod),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            if (actionDie > 0) ...[RollResultCard(d6: actionDie, d10s: d10s)],
+            SizedBox(width: 5),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Modifier"),
+                DropdownButton(
+                  value: modifier,
+                  items:
+                      List.generate(11, (index) => index - 5)
+                          .map(
+                            (i) =>
+                                DropdownMenuItem(value: i, child: Text("$i")),
+                          )
+                          .toList(),
+                  onChanged: (mod) {
+                    if (mod != null) {
+                      setState(() => modifier = mod);
+                    }
+                  },
+                ),
+              ],
+            ),
           ],
-          if (isOracleRoll) ...[RollResultCard.d100(d100: d100)],
-        ],
-      ),
+        ),
+        const SizedBox(height: 20),
+        (roll != null) ? RollResultCard(roll: roll!) : Card(),
+      ],
     );
   }
 }
